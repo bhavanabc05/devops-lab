@@ -18,6 +18,25 @@ def index():
         "visits": count
     })
 
+@app.route("/reset", methods=["POST"])
+def reset():
+    """Reset the visit counter to zero."""
+    r.set("visits", 0)
+    return jsonify({
+        "message": "Visit counter reset to zero.",
+        "visits": 0
+    })
+
+@app.route("/stats")
+def stats():
+    """Return full stats — visits plus Redis info."""
+    visits = r.get("visits") or "0"
+    return jsonify({
+        "visits": int(visits),
+        "hostname": os.uname().nodename,
+        "redis_host": os.getenv("REDIS_HOST", "localhost")
+    })
+
 @app.route("/health")
 def health():
     return jsonify({"status": "ok"})
